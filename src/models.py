@@ -2,6 +2,8 @@ from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Text, Boolean
 from sqlalchemy.orm import relationship
+import sys
+from graphviz import Digraph
 
 db = SQLAlchemy()
 
@@ -116,14 +118,42 @@ class Follow(db.Model):
 if __name__ == '__main__':
     import os
     from sqlalchemy import create_engine
+
+    def build_graph(metadata, name, nodesep='0.25', ranksep='0.5', rankdir='TB'):
+        g = Digraph(name=name, format='png')
+        g.attr('graph', nodesep=str(nodesep), ranksep=str(ranksep), rankdir=rankdir)
+        g.attr('node', shape='record')
+        tables = list(metadata.tables.items())
+        for tname, table in tables:
+            fields = []
+            for col in table.columns:
+                colname = col.name
+                if col.primary_key:
+                    colname = colname + ' (PK)'
+                fields.append(colname + r'\l')
+            label = '{' + tname + '|' + ''.join(fields) + '}'
+            g.node(tname, label=label)
+        for tname, table in tables:
+            for col in table.columns:
+                for fk in col.foreign_keys:
+                    target = fk.column.table.name
+                    g.edge(tname, target)
+        return g
+
     try:
         tmp_db = 'tmp_instagram.db'
         if os.path.exists(tmp_db):
             os.remove(tmp_db)
         engine = create_engine(f'sqlite:///{tmp_db}')
         db.metadata.create_all(engine)
-        from eralchemy2 import render_er
-        render_er(f'sqlite:///{tmp_db}', 'diagram.png')
+        metadata = db.metadata
+        g1 = build_graph(metadata, 'compact', nodesep='0.25', ranksep='0.5', rankdir='TB')
+        g1.render('diagram_compact', cleanup=True)
+        g2 = build_graph(metadata, 'spaced', nodesep='1.0', ranksep='1.2', rankdir='TB')
+        g2.render('diagram_spaced', cleanup=True)
+        g3 = build_graph(metadata, 'symmetric', nodesep='1.2', ranksep='1.0', rankdir='LR')
+        g3.render('diagram_symmetric', cleanup=True)
+        os.replace('diagram_spaced.png', 'diagram.png')
     finally:
         try:
             if os.path.exists(tmp_db):

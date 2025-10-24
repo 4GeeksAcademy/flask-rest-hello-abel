@@ -1,0 +1,19 @@
+digraph compact {
+	graph [nodesep=0.25 rankdir=TB ranksep=0.5]
+	node [shape=record]
+	user [label="{user|id (PK)\lusername\lemail\lpassword\lfull_name\lbio\lwebsite\lis_private\lis_verified\lcreated_at\l}"]
+	post [label="{post|id (PK)\luser_id\lcaption\llocation\lcreated_at\lis_archived\l}"]
+	media [label="{media|id (PK)\lpost_id\lmedia_type\lurl\lorder\l}"]
+	comment [label="{comment|id (PK)\lpost_id\luser_id\lcontent\lcreated_at\lparent_id\l}"]
+	like [label="{like|id (PK)\luser_id\lpost_id\lcreated_at\l}"]
+	follow [label="{follow|id (PK)\lfollower_id\lfollowed_id\lcreated_at\lis_accepted\l}"]
+	post -> user
+	media -> post
+	comment -> post
+	comment -> user
+	comment -> comment
+	like -> user
+	like -> post
+	follow -> user
+	follow -> user
+}
