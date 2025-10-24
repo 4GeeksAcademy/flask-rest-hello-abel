@@ -18,6 +18,8 @@ wtforms = "==3.0.1"
 flask-sqlalchemy = "*"
 sqlalchemy = "*"
 flask-admin = "*"
+eralchemy2 = "*"
+graphviz = "*"
 
 [requires]
 python_version = "3.13"
@@ -28,3 +30,4 @@ init="flask db init"
 migrate="flask db migrate"
 upgrade="flask db upgrade"
 deploy="echo 'Please follow this 3 steps to deploy: https://start.4geeksacademy.com/deploy/render' "
+diagram="python src/models.py"

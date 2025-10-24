@@ -114,4 +114,19 @@ class Follow(db.Model):
 
 
 if __name__ == '__main__':
-    pass
+    import os
+    from sqlalchemy import create_engine
+    try:
+        tmp_db = 'tmp_instagram.db'
+        if os.path.exists(tmp_db):
+            os.remove(tmp_db)
+        engine = create_engine(f'sqlite:///{tmp_db}')
+        db.metadata.create_all(engine)
+        from eralchemy2 import render_er
+        render_er(f'sqlite:///{tmp_db}', 'diagram.png')
+    finally:
+        try:
+            if os.path.exists(tmp_db):
+                os.remove(tmp_db)
+        except Exception:
+            pass
