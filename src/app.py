@@ -37,7 +37,7 @@ def sitemap():
 def handle_hello():
 
     response_body = {
-        "msg": "Hello, this is your GET /user response "
+        "msg": "Hola, esta es la respuesta GET /user"
     }
 
     return jsonify(response_body), 200

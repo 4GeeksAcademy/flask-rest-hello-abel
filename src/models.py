@@ -113,9 +113,9 @@ class Follow(db.Model):
                             follower_id], back_populates="following")
     followed = relationship("User", foreign_keys=[
                             followed_id], back_populates="followers")
+ 
 
-
-if __name__ == '__main__':
+def generar_diagrama():
     import os
     from sqlalchemy import create_engine
 
@@ -140,23 +140,19 @@ if __name__ == '__main__':
                     g.edge(tname, target)
         return g
 
+    tmp_db = 'tmp_instagram.db'
     try:
-        tmp_db = 'tmp_instagram.db'
         if os.path.exists(tmp_db):
             os.remove(tmp_db)
         engine = create_engine(f'sqlite:///{tmp_db}')
         db.metadata.create_all(engine)
         metadata = db.metadata
-        g1 = build_graph(metadata, 'compact', nodesep='0.25', ranksep='0.5', rankdir='TB')
-        g1.render('diagram_compact', cleanup=True)
-        g2 = build_graph(metadata, 'spaced', nodesep='1.0', ranksep='1.2', rankdir='TB')
-        g2.render('diagram_spaced', cleanup=True)
-        g3 = build_graph(metadata, 'symmetric', nodesep='1.2', ranksep='1.0', rankdir='LR')
-        g3.render('diagram_symmetric', cleanup=True)
-        os.replace('diagram_spaced.png', 'diagram.png')
+        g = build_graph(metadata, 'diagram', nodesep='1.0', ranksep='1.2', rankdir='TB')
+        g.render('diagram', cleanup=True)
     finally:
         try:
             if os.path.exists(tmp_db):
                 os.remove(tmp_db)
         except Exception:
             pass
+
